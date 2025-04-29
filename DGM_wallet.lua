@@ -9,6 +9,9 @@ local function putMoneyInWallet(player)
         return
     end
 
+    -- Use sandbox variable for custom wallet name
+    local walletName = SandboxVars.CustomVars.WalletName or "Base.Wallet"
+
     -- Get the player's inventory
     local inventory = player:getInventory()
 
@@ -27,29 +30,22 @@ local function putMoneyInWallet(player)
         baseMoneyItem = inventory:FindAndReturn("Base.Money")
     end
 
-    -- Check if the player has a Base.Wallet
-    local walletItem = inventory:FindAndReturn("Base.Wallet")
+    -- Check if the player has a wallet
+    local walletItem = inventory:FindAndReturn(walletName)
     if walletItem == nil then
         player:Say("I don't have a wallet.")
         return
     end
 
-    -- Get the amount of money
-    local moneyAmount = moneyItem:getCount()
-    if moneyAmount <= 0 then
-        player:Say("No money to transfer.")
-        return
-    end
-
     -- Add money to the wallet
     local walletData = walletItem:getModData()
-    walletData.money = (walletData.money or 0) + moneyAmount
+    walletData.money = (walletData.money or 0) + moneyItem:getCount()
 
     -- Remove money from inventory
     inventory:Remove(moneyItem)
 
     -- Notify the player
-    player:Say("Transferred " .. tostring(moneyAmount) .. " money to the wallet.")
+    player:Say("Transferred money to the wallet.")
 end
 
 -- Hook into the game to add a "Put Money in Wallet" option in the context menu
@@ -57,7 +53,7 @@ Events.OnFillWorldObjectContextMenu.Add(function(playerIndex, context, worldObje
     local player = getSpecificPlayer(playerIndex)
     if player then
         local inventory = player:getInventory()
-        if inventory:FindAndReturn("BMSATM.Money") and inventory:FindAndReturn("Base.Wallet") then
+        if inventory:FindAndReturn("BMSATM.Money") and inventory:FindAndReturn(SandboxVars.CustomVars.WalletName or "Base.Wallet") then
             context:addOption("Put BMSATM.Money in Wallet", player, putMoneyInWallet)
         end
     end

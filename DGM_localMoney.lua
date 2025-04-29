@@ -5,7 +5,7 @@ local LocalMoneySystem = {}
 
 -- Initialize the local money type
 function LocalMoneySystem.initialize()
-    -- Create a mapping for local money type
+    -- Ensure the BetterMoneySystem mod is active
     if not getActivatedMods():contains("BetterMoneySystem") then
         print("BetterMoneySystem mod is not active. Local money type script will not load.")
         return
@@ -21,6 +21,10 @@ function LocalMoneySystem.initialize()
 
     -- Add money type to the system
     if not getScriptManager():FindItem(LocalMoneySystem.moneyType.name) then
+        if not LocalMoneySystem.moneyType or not LocalMoneySystem.moneyType.name then
+            print("Error: LocalMoneySystem.moneyType is not properly initialized.")
+            return
+        end
         getScriptManager():AddItem(LocalMoneySystem.moneyType.name, LocalMoneySystem.moneyType)
         print("Added local money type: " .. LocalMoneySystem.moneyType.name)
     end
